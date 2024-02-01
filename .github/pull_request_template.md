@@ -1,4 +1,6 @@
-Many thanks for submitting your Pull Request :heart:! 
+THIS IS MIDSTREAM REPOSITORY /only backporting or product stream changes/
+
+Upstream is at https://github.com/apache/incubator-kie-kogito-runtimes
 
 Please make sure that your PR meets the following requirements:
 
