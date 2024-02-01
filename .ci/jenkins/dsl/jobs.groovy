@@ -73,14 +73,11 @@ Map getMultijobPRConfig(JenkinsFolder jobFolder) {
         ],
     ]
 
-<<<<<<< Updated upstream
-=======
     // For Quarkus 3, run only runtimes PR check... for now
     if (isMainStream() && EnvUtils.hasEnvironmentId(this, jobFolder.getEnvironmentName(), 'quarkus3')) {
         jobConfig.jobs.retainAll { it.id == 'kogito-runtimes' }
     }
 
->>>>>>> Stashed changes
     return jobConfig
 }
 
@@ -102,9 +99,6 @@ Utils.isMainBranch(this) && KogitoJobTemplate.createPullRequestMultibranchPipeli
 createSetupBranchJob()
 
 // Nightly jobs
-<<<<<<< Updated upstream
-Closure setupSonarProjectKeyEnv = { Closure paramsGetter ->
-    return { script ->
         def jobParams = paramsGetter(script)
         jobParams.env.put('SONAR_PROJECT_KEY', 'apache_incubator-kie-kogito-runtimes')
         return jobParams
@@ -115,26 +109,13 @@ Closure nightlyJobParamsGetter = isMainStream() ? JobParamsUtils.DEFAULT_PARAMS_
 KogitoJobUtils.createNightlyBuildChainBuildAndDeployJobForCurrentRepo(this, '', true)
 setupSpecificBuildChainNightlyJob('sonarcloud', setupSonarProjectKeyEnv(nightlyJobParamsGetter))
 setupSpecificBuildChainNightlyJob('native', nightlyJobParamsGetter)
-=======
-Closure nightlyJobParamsGetter = isMainStream() ? JobParamsUtils.DEFAULT_PARAMS_GETTER : setup4AMCronTriggerJobParamsGetter
-KogitoJobUtils.createNightlyBuildChainBuildAndDeployJobForCurrentRepo(this, '', true)
-setupSpecificBuildChainNightlyJob('sonarcloud', nightlyJobParamsGetter)
-setupSpecificBuildChainNightlyJob('native', nightlyJobParamsGetter)
-setupNightlyQuarkusIntegrationJob('quarkus-main', nightlyJobParamsGetter)
-setupNightlyQuarkusIntegrationJob('quarkus-branch', nightlyJobParamsGetter)
-setupNightlyQuarkusIntegrationJob('quarkus-lts', nightlyJobParamsGetter)
-setupNightlyQuarkusIntegrationJob('native-lts', nightlyJobParamsGetter)
->>>>>>> Stashed changes
 
 // Release jobs
 setupReleaseDeployJob()
 setupReleasePromoteJob()
-<<<<<<< Updated upstream
 
 // Weekly deploy job
 setupWeeklyDeployJob()
-=======
->>>>>>> Stashed changes
 
 // Tools job
 if (isMainStream()) {
@@ -143,16 +124,6 @@ if (isMainStream()) {
         compare_deps_remote_poms: [ 'io.quarkus:quarkus-bom' ],
         properties: [ 'version.io.quarkus' ],
     ])
-<<<<<<< Updated upstream
-=======
-
-    // Quarkus 3
-    if (EnvUtils.isEnvironmentEnabled(this, 'quarkus-3')) {
-        // TODO create PR job with branch source plugin. How to ?
-        // setupPrQuarkus3RewriteJob() // Deactivated due to ghprb not available on Apache Jenkins
-        setupStandaloneQuarkus3RewriteJob()
-    }
->>>>>>> Stashed changes
 }
 
 /////////////////////////////////////////////////////////////////
@@ -174,15 +145,9 @@ void createSetupBranchJob() {
         JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
 
         GIT_AUTHOR: "${GIT_AUTHOR_NAME}",
-<<<<<<< Updated upstream
         GIT_AUTHOR_CREDS_ID: "${GIT_AUTHOR_CREDENTIALS_ID}",
         GIT_AUTHOR_PUSH_CREDS_ID: "${GIT_AUTHOR_PUSH_CREDENTIALS_ID}",
-=======
-        AUTHOR_CREDS_ID: "${GIT_AUTHOR_CREDENTIALS_ID}",
->>>>>>> Stashed changes
-
         MAVEN_SETTINGS_CONFIG_FILE_ID: "${MAVEN_SETTINGS_FILE_ID}",
-
         IS_MAIN_BRANCH: "${Utils.isMainBranch(this)}",
     ])
     KogitoJobTemplate.createPipelineJob(this, jobParams)?.with {
@@ -206,13 +171,8 @@ void setupReleaseDeployJob() {
         JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
         GIT_AUTHOR: "${GIT_AUTHOR_NAME}",
 
-<<<<<<< Updated upstream
         GIT_AUTHOR_CREDS_ID: "${GIT_AUTHOR_CREDENTIALS_ID}",
         GIT_AUTHOR_PUSH_CREDS_ID: "${GIT_AUTHOR_PUSH_CREDENTIALS_ID}",
-=======
-        AUTHOR_CREDS_ID: "${GIT_AUTHOR_CREDENTIALS_ID}",
-        GITHUB_TOKEN_CREDS_ID: "${GIT_AUTHOR_TOKEN_CREDENTIALS_ID}",
->>>>>>> Stashed changes
 
         MAVEN_SETTINGS_CONFIG_FILE_ID: "${MAVEN_SETTINGS_FILE_ID}",
         MAVEN_DEPENDENCIES_REPOSITORY: "${MAVEN_ARTIFACTS_REPOSITORY}",
@@ -254,13 +214,8 @@ void setupReleasePromoteJob() {
 
         GIT_AUTHOR: "${GIT_AUTHOR_NAME}",
 
-<<<<<<< Updated upstream
         GIT_AUTHOR_CREDS_ID: "${GIT_AUTHOR_CREDENTIALS_ID}",
         GIT_AUTHOR_PUSH_CREDS_ID: "${GIT_AUTHOR_PUSH_CREDENTIALS_ID}",
-=======
-        AUTHOR_CREDS_ID: "${GIT_AUTHOR_CREDENTIALS_ID}",
-        GITHUB_TOKEN_CREDS_ID: "${GIT_AUTHOR_TOKEN_CREDENTIALS_ID}",
->>>>>>> Stashed changes
 
         MAVEN_SETTINGS_CONFIG_FILE_ID: "${MAVEN_SETTINGS_FILE_ID}",
         MAVEN_DEPENDENCIES_REPOSITORY: "${MAVEN_ARTIFACTS_REPOSITORY}",
@@ -286,7 +241,6 @@ void setupReleasePromoteJob() {
     }
 }
 
-<<<<<<< Updated upstream
 void setupWeeklyDeployJob() {
     def jobParams = JobParamsUtils.getBasicJobParams(this, 'kogito-runtimes.weekly-deploy', JobType.OTHER, "${jenkins_path}/Jenkinsfile.weekly.deploy", 'Kogito Runtimes Weekly Deploy')
     JobParamsUtils.setupJobParamsAgentDockerBuilderImageConfiguration(this, jobParams)
@@ -301,42 +255,10 @@ void setupWeeklyDeployJob() {
         MAVEN_DEPENDENCIES_REPOSITORY: "${MAVEN_ARTIFACTS_REPOSITORY}",
         MAVEN_DEPLOY_REPOSITORY: "${MAVEN_ARTIFACTS_UPLOAD_REPOSITORY_URL}",
         MAVEN_REPO_CREDS_ID: "${MAVEN_ARTIFACTS_UPLOAD_REPOSITORY_CREDS_ID}",
-=======
-void setupPrQuarkus3RewriteJob() {
-    def jobParams = JobParamsUtils.getBasicJobParamsWithEnv(this, 'kogito-runtimes.rewrite', JobType.PULL_REQUEST, 'quarkus-3', "${jenkins_path}/Jenkinsfile.quarkus-3.rewrite.pr", 'Kogito Runtimes Quarkus 3 rewrite patch regeneration')
-    JobParamsUtils.setupJobParamsAgentDockerBuilderImageConfiguration(this, jobParams)
-    jobParams.jenkinsfile = "${jenkins_path}/Jenkinsfile.quarkus-3.rewrite.pr"
-    jobParams.pr.putAll([
-        run_only_for_branches: [ "${GIT_BRANCH}" ],
-        disable_status_message_error: true,
-        disable_status_message_failure: true,
-        trigger_phrase: '.*[j|J]enkins,?.*(rewrite|write) [Q|q]uarkus-3.*',
-        trigger_phrase_only: true,
-        commitContext: 'Quarkus 3 rewrite',
-    ])
-    jobParams.env.putAll([
-        AUTHOR_CREDS_ID: "${GIT_AUTHOR_CREDENTIALS_ID}",
-        MAVEN_SETTINGS_CONFIG_FILE_ID: "${MAVEN_SETTINGS_FILE_ID}",
-    ])
-    KogitoJobTemplate.createPRJob(this, jobParams)
-}
-
-void setupStandaloneQuarkus3RewriteJob() {
-    def jobParams = JobParamsUtils.getBasicJobParams(this, 'kogito-runtimes.quarkus-3.rewrite', JobType.TOOLS, "${jenkins_path}/Jenkinsfile.quarkus-3.rewrite.standalone", 'Kogito Runtimes Quarkus 3 rewrite patch regeneration')
-    jobParams.env.putAll(EnvUtils.getEnvironmentEnvVars(this, 'quarkus-3'))
-    JobParamsUtils.setupJobParamsAgentDockerBuilderImageConfiguration(this, jobParams)
-    jobParams.env.putAll([
-        AUTHOR_CREDS_ID: "${GIT_AUTHOR_CREDENTIALS_ID}",
-        JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
-        BASE_BRANCH: Utils.getGitBranch(this),
-        BASE_AUTHOR: Utils.getGitAuthor(this),
-        MAVEN_SETTINGS_CONFIG_FILE_ID: "${MAVEN_SETTINGS_FILE_ID}",
->>>>>>> Stashed changes
     ])
     KogitoJobTemplate.createPipelineJob(this, jobParams)?.with {
         parameters {
             stringParam('DISPLAY_NAME', '', 'Setup a specific build display name')
-<<<<<<< Updated upstream
 
             stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
 
@@ -345,11 +267,6 @@ void setupStandaloneQuarkus3RewriteJob() {
 
             stringParam('GIT_CHECKOUT_DATETIME', '', 'Git checkout date and time - (Y-m-d H:i)')
 
-=======
-            stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
-            stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
-            booleanParam('IS_PR_SOURCE_BRANCH', false, 'Set to true if you are launching the job for a PR source branch')
->>>>>>> Stashed changes
             booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }
     }

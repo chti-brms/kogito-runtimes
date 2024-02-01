@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Jira 
-    url: https://issues.redhat.com/projects/KOGITO
+    url: https://issues.redhat.com/projects/SRVLOGIC
     about: Kogito Jira Board
   - name: Question
     url: https://stackoverflow.com/questions/ask?tags=kogito
